@@ -23,14 +23,14 @@ def test_can_lock():
     test_nft.mint({"from": account})
     # non token holders cannot lock
     with pytest.raises(exceptions.VirtualMachineError):
-        test_nft.lockToken(token_id, account2, {"from": account2})
+        test_nft.lockToken(token_id, account2, False, {"from": account2})
     # token holder can lock (if not already locked)
-    test_nft.lockToken(token_id, account2, {"from": account})
+    test_nft.lockToken(token_id, account2, False, {"from": account})
     assert test_nft.tokenIdLocked(token_id) == True
     assert test_nft.tokenIdController(token_id) == account2
     # cannot lock if already locked
     with pytest.raises(exceptions.VirtualMachineError):
-        test_nft.lockToken(token_id, account2, {"from": account})
+        test_nft.lockToken(token_id, account2, False, {"from": account})
     # once locked, transfer cannot be initiated from owner
     with pytest.raises(exceptions.VirtualMachineError):
         test_nft.safeTransferFrom(account, account2, token_id, {"from": account})
@@ -45,7 +45,7 @@ def test_can_unlock():
     account2 = get_account(name="DEV02")
     token_id = test_nft.tokenCounter()
     test_nft.mint({"from": account})
-    test_nft.lockToken(token_id, account2, {"from": account})
+    test_nft.lockToken(token_id, account2, False, {"from": account})
     # once locked non controller cannot initiate unlock
     with pytest.raises(exceptions.VirtualMachineError):
         test_nft.unlockToken(token_id, {"from": account})

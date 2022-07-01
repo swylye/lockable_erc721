@@ -14,10 +14,20 @@ contract Lockable {
         tokenContract = IERC721(_tokenAddress);
     }
 
-    function lockToken(uint256 _tokenId, address _controller) public {
+    function lockToken(
+        uint256 _tokenId,
+        address _controller,
+        bool _proxy
+    ) public {
+        address tokenOwner;
+        if (_proxy) {
+            tokenOwner = tx.origin;
+        } else {
+            tokenOwner = msg.sender;
+        }
         require(tokenIdLocked[_tokenId] != true, "Token is already locked!");
         require(
-            msg.sender == tokenContract.ownerOf(_tokenId),
+            tokenOwner == tokenContract.ownerOf(_tokenId),
             "You must own the tokenId in order to lock it!"
         );
         require(_controller != address(0), "Controller address must not be 0!");
